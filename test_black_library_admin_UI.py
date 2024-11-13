@@ -83,12 +83,12 @@ def testcase_4_empty_input(driver):
     assert len(results) > 1
 
 #Test bằng 1 email cụ thể
-def testcase_4_valid_email_input(driver):
+def testcase_4_valid_email_input(driver, keyword=None):
     testcase_3(driver)
 
-    keyword = "lmt2@gmail.com"
+    cur_keyword = keyword if keyword else "lmt2@gmail.com"
     #Nhập keyword và ấn nút tìm kiếm
-    driver.find_element(By.XPATH, "//input[@name='value_search']").send_keys(keyword)
+    driver.find_element(By.XPATH, "//input[@name='value_search']").send_keys(cur_keyword)
     search_btn = get_clickable_element(driver, By.XPATH, "//button[text()='⚲ Tìm kiếm']")
     search_btn.click()
     #Đợi kết quả
@@ -97,7 +97,7 @@ def testcase_4_valid_email_input(driver):
     results = driver.find_elements(By.XPATH, "//table/tbody//tr//td[1]")
     #dùng lower vì phần hiển thị email luôn viết hoa chữ cái đầu
     #Lấy phần tử thứ 1 vì 0 là header
-    assert keyword in str(results[1].text).lower()
+    assert cur_keyword in str(results[0].text).lower()
 
 #Test bằng 1 phần email
 def testcase_4_unfinished_input(driver):
@@ -363,3 +363,88 @@ def test_add_multi_user(driver):
         time.sleep(5)
         message = driver.find_element(By.XPATH, "//div[@class='container']/form/a").text
         assert "Tạo tài khoản thành công, vui vòng đăng nhập" in message
+
+
+#Test chức năng xem chi tiết tài khoản user
+def testcase_6(driver, keyword=None):
+    #modify phần này để sử dụng lại việc check thông tin user sau khi thay đổi thông tin
+    if keyword:
+        testcase_4_valid_email_input(driver, keyword)
+    else:
+        testcase_3(driver)
+
+    #Lấy thông tin của người dùng thứ index+1, vd: người dùng 1 thì index = 1+1
+    index = 2
+    user_info = driver.find_elements(By.XPATH, f"//table/tbody//tr[{index}]//td")
+    #lưu thông tin vào 1 dict
+    dict_user_info = {
+        "Email": str(user_info[0].text).lower(),
+        "name": str(user_info[1].text).lower(),
+        "Status": str(user_info[2].text).lower(),
+        "create_day": str(user_info[4].text).lower()
+    }
+    
+    #Chọn nút chi tiết
+    user_detail_btn = get_clickable_element(driver, By.XPATH, f"//table/tbody//tr[{index}]//td[6]//form//button")
+    user_detail_btn.click()
+    time.sleep(1)
+    driver.find_element(By.XPATH, "//body").send_keys(Keys.END)
+    time.sleep(1)
+    user_email = driver.find_element(By.XPATH, "//div[@class='form']/div/h3").text
+    user_name = driver.find_element(By.NAME, "ten").get_attribute('value')
+    user_status = driver.find_element(By.XPATH, "//select[@name='status']").text
+    
+    #default role khi tải trang luôn là sinh viên nên không check nữa
+    # user_role = driver.find_element(By.NAME, "rank")
+    # select = Select(user_role)
+    # # Lấy giá trị của option đang được chọn (value)
+    # selected_option = select.first_selected_option  # Lấy option đang được chọn
+    # selected_value = selected_option.text
+    
+    user_create_day = driver.find_element(By.XPATH, "//div[@class='form']/div/p").text
+
+    assert dict_user_info['Email'] in user_email
+    assert dict_user_info['name'] in user_name
+    assert dict_user_info['Status'] in str(user_status).lower()
+    assert dict_user_info['create_day'] in user_create_day
+
+#Test chức năng thay đổi thông tin tài khoản
+#Fail vì chức năng cập nhật sai
+def testcase_7(driver):
+    #tìm kiếm user bằng email
+    email = "lmt@gmail.com"
+    testcase_4_valid_email_input(driver, email)
+
+    #chọn nút xem chi tiết
+    user_detail_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button")
+    user_detail_btn.click()
+    time.sleep(1)
+    driver.find_element(By.XPATH, "//body").send_keys(Keys.END)
+    time.sleep(1)
+
+    new_name = "RanDom Tri"
+    new_role = "Công chức"
+
+    #Đổi thành tên mới
+    user_name = driver.find_element(By.NAME, "ten")
+    user_name.clear()
+    user_name.send_keys(new_name)
+    
+    #đổi role mới
+    user_role = driver.find_element(By.NAME, "rank")
+    select = Select(user_role)
+    # Lấy giá trị của option đang được chọn (value)
+    select.select_by_visible_text(new_role)
+    
+    tac = get_clickable_element(driver, By.NAME, "tac")
+    tac.click()
+
+    save_btn = get_clickable_element(driver, By.XPATH, "//div[@class='buttons']//button[1]")
+    save_btn.click()
+
+    testcase_4_valid_email_input(driver, email)
+
+    user_info = driver.find_elements(By.XPATH, f"//table/tbody//tr[2]//td")
+
+    assert new_name == user_info[1].text
+    assert new_role.lower() == str(user_info[3].text).lower()
