@@ -119,13 +119,13 @@ def testcase_4_unfinished_input(driver):
         assert keyword in current_user
 
 #Test bằng 1 email không tồn tại
-def testcase_4_invalid_email(driver):
+def testcase_4_invalid_email(driver, keyword=None):
     testcase_3(driver)
 
     #email chưa được đăng ký trong db
-    keyword = "asdlmt123987@gmail.com"
+    cur_keyword = keyword if keyword else "asdlmt123987@gmail.com"
     #Nhập keyword và ấn nút tìm kiếm
-    driver.find_element(By.XPATH, "//input[@name='value_search']").send_keys(keyword)
+    driver.find_element(By.XPATH, "//input[@name='value_search']").send_keys(cur_keyword)
     search_btn = get_clickable_element(driver, By.XPATH, "//button[text()='⚲ Tìm kiếm']")
     search_btn.click()
     #Đợi kết quả
@@ -448,3 +448,106 @@ def testcase_7(driver):
 
     assert new_name == user_info[1].text
     assert new_role.lower() == str(user_info[3].text).lower()
+
+#Test chức năng từ chối tài khoản
+def testcase_8(driver):
+    testcase_3(driver)
+    #Lấy element tùy chọn trạng thái
+    status_options = driver.find_element(By.XPATH, "//select[@name='status']")
+    select_options = Select(status_options)
+    #Chọn các tài khoản chưa được duyệt
+    select_options.select_by_visible_text("Chưa được duyệt")
+    time.sleep(1)
+    
+    #Lấy email của tài khoản đầu tiên
+    email = driver.find_element(By.XPATH, "//table/tbody//tr[2]//td[1]").text
+    email = str(email).lower()
+    #Chọn nút từ chối
+    decline_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button[2]")
+    decline_btn.click()
+
+    #Sau khi từ chối thì tìm lại tài khoản vừa từ chối để kiểm tra
+    testcase_4_valid_email_input(driver, email)
+    status = driver.find_element(By.XPATH, "//table/tbody//tr[2]//td[3]").text
+    assert "Đã Từ Chối" in status
+
+#Test chức năng từ duyệt tài khoản
+def testcase_9(driver):
+    testcase_3(driver)
+    #Lấy element tùy chọn trạng thái
+    status_options = driver.find_element(By.XPATH, "//select[@name='status']")
+    select_options = Select(status_options)
+    #Chọn các tài khoản chưa được duyệt
+    select_options.select_by_visible_text("Chưa được duyệt")
+    time.sleep(1)
+    
+    #Lấy email của tài khoản đầu tiên
+    email = driver.find_element(By.XPATH, "//table/tbody//tr[2]//td[1]").text
+    email = str(email).lower()
+    #Chọn nút duyệt
+    decline_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button[1]")
+    decline_btn.click()
+
+    #Sau khi từ chối thì tìm lại tài khoản vừa từ chối để kiểm tra
+    testcase_4_valid_email_input(driver, email)
+    status = driver.find_element(By.XPATH, "//table/tbody//tr[2]//td[3]").text
+    assert "Đã Được Duyệt" in status
+
+#Test chức năng bỏ trống trường thông tin tài khoản
+def testcase_10(driver):
+    #tìm kiếm user bằng email
+    email = "user14@gmail.com"
+    testcase_4_valid_email_input(driver, email)
+
+    #chọn nút xem chi tiết
+    user_detail_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button[text()='Chi tiết']")
+    user_detail_btn.click()
+    time.sleep(1)
+    driver.find_element(By.XPATH, "//body").send_keys(Keys.END)
+    time.sleep(1)
+
+    #Xóa các trường thông tin
+    driver.find_element(By.NAME, "ten").clear()
+    driver.find_element(By.NAME, "cccd").clear()
+    driver.find_element(By.NAME, "number").clear()
+    driver.find_element(By.NAME, "address").clear()
+    driver.find_element(By.NAME, "pass").clear()
+    #Lưu thông tin
+    tac = get_clickable_element(driver, By.NAME, "tac")
+    tac.click()
+
+    save_btn = get_clickable_element(driver, By.XPATH, "//div[@class='buttons']//button[1]")
+    save_btn.click()
+
+    testcase_4_valid_email_input(driver, email)
+
+    user_detail_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button[text()='Chi tiết']")
+    user_detail_btn.click()
+    driver.find_element(By.XPATH, "//body").send_keys(Keys.END)
+    time.sleep(1)
+
+    assert "" in driver.find_element(By.NAME, "ten").text
+    assert "" in driver.find_element(By.NAME, "cccd").text
+    assert "" in driver.find_element(By.NAME, "number").text
+    assert "" in driver.find_element(By.NAME, "address").text
+    assert "" in driver.find_element(By.NAME, "pass").text
+
+#Test chức năng xóa tài khoản
+def testcase_11(driver):
+    #tìm kiếm user bằng email có tồn tại
+    email = "user16@gmail.com"
+    testcase_4_valid_email_input(driver, email)
+
+    #chọn nút xem chi tiết
+    user_detail_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button[text()='Chi tiết']")
+    user_detail_btn.click()
+    time.sleep(1)
+    driver.find_element(By.XPATH, "//body").send_keys(Keys.END)
+    time.sleep(1)
+
+    delete_btn = get_clickable_element(driver, By.XPATH, "//div[@class='buttons']//button[text()='Xoá tài khoản']")
+    delete_btn.click()
+    time.sleep(1)
+
+    #Tìm lại tài khoản đã xóa
+    testcase_4_invalid_email(driver, email)
