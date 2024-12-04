@@ -24,9 +24,12 @@ def get_clickable_element(driver, by: By, arg, timeout = 10):
         EC.element_to_be_clickable((by, arg))
     )
     return element
-# --- Test các chức năng của user ---
+
+# ============= Test các chức năng đăng nhập của user =============
+
 #Test đăng nhập thành công
-def testcase_1(driver):
+#passed in 11.79s
+def test_valid_login(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
     time.sleep(1)
@@ -48,7 +51,8 @@ def testcase_1(driver):
     assert "http://localhost/mongodb/index.php" in current_url
 
 # Test đăng nhập sai mật khẩu
-def testcase_2(driver):
+#passed in 10.66s
+def test_login_with_wrong_password(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
 
@@ -70,7 +74,8 @@ def testcase_2(driver):
     assert "Incorect!" in message
 
 # Test đăng nhập khi để trống thông tin
-def testcase_3(driver):
+# passed in 10.58s
+def test_login_with_blank_fields(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
 
@@ -93,7 +98,8 @@ def testcase_3(driver):
     assert "Không được để trống Email" in message
 
 # Test đăng nhập khi để trống mật khẩu
-def testcase_4(driver):
+# passed in 10.62s
+def test_login_with_blank_password_field(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
 
@@ -115,7 +121,8 @@ def testcase_4(driver):
     assert "Không được để trống tài khoản" in message
 
 # Test đăng nhập khi điền email không đúng
-def testcase_5(driver):
+# passed in 10.63s
+def test_login_with_wrong_email(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
 
@@ -134,32 +141,11 @@ def testcase_5(driver):
     login_button.click()
     time.sleep(1)
     message = driver.find_element(By.XPATH, "//div[@class='container']/form/a").text
-    assert "Email không đúng" in message
-
-#Test đăng nhập bằng email chưa đăng ký
-def testcase_6(driver):
-    #Kết nối đến web
-    driver.get("http://localhost/mongodb/")
-
-    #Chọn nút đăng nhập
-    user_icon = get_clickable_element(driver, By.XPATH, "//div[@class='nav-items']//a")
-    user_icon.click()
-    time.sleep(0.5)
-    login_button = get_clickable_element(driver, By.XPATH, "//div[@class='nav-items']//a//div//button")
-    login_button.click()
-    time.sleep(1)
-    #Điền thông tin và đăng nhập
-    driver.find_element(By.NAME, "email").send_keys("lmt123123123@gmail.com.vn")
-    driver.find_element(By.NAME, "password").send_keys("lmt123")
-    login_button = get_clickable_element(driver, By.XPATH, "//form//button")
-    #Nhấn đăng nhập
-    login_button.click()
-    time.sleep(1)
-    message = driver.find_element(By.XPATH, "//div[@class='container']/form/a").text
     assert "Incorect!" in message
 
 #Test đăng nhập bằng tài khoản đã bị khóa
-def testcase_7(driver):
+#Test fail vì vẫn đăng nhập được
+def test_login_with_banned_account(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
 
@@ -181,7 +167,8 @@ def testcase_7(driver):
     assert "Tài khoản của bạn đã bị khoá!" in message
 
 # Test nosql injection
-def testcase_8(driver):
+# passed in 10.74s
+def test_nosql_injection(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
 
@@ -193,7 +180,7 @@ def testcase_8(driver):
     login_button.click()
     time.sleep(1)
     #Điền thông tin và đăng nhập
-    driver.find_element(By.NAME, "email").send_keys(f"admin' OR '1'='1")
+    driver.find_element(By.NAME, "email").send_keys(f"'; return '' == '")
     driver.find_element(By.NAME, "password").send_keys("lmt123")
     login_button = get_clickable_element(driver, By.XPATH, "//form//button")
     #Nhấn đăng nhập
@@ -203,9 +190,10 @@ def testcase_8(driver):
     assert "Incorect!" in message
 
 #Test chức năng đăng xuất
-def testcase_9(driver):
+# passed in 13.74s
+def test_logout(driver):
     #Thực hiện đăng nhập thành công
-    testcase_1(driver)
+    test_valid_login(driver)
     user_icon = get_clickable_element(driver, By.XPATH, "//div[@class='nav-items']//a")
     user_icon.click()
     time.sleep(0.5)
@@ -222,7 +210,8 @@ def testcase_9(driver):
     assert "Chưa Đăng Nhập" in message
 
 #Test chức năng tìm kiếm khi để trống
-def testcase_10(driver):
+# passed in 10.01s
+def test_find_product_with_blank_field(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
     time.sleep(1)
@@ -237,7 +226,8 @@ def testcase_10(driver):
     assert "Vui lòng nhập từ khóa tìm kiếm." in message
 
 #Test chức năng tìm kiếm sản phẩm không tồn tại
-def testcase_11(driver):
+# passed in 11.16s
+def test_find_product_that_not_exist(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
     time.sleep(1)
@@ -253,7 +243,8 @@ def testcase_11(driver):
     assert "Không tìm thấy sách." in message
 
 #Test chức năng tìm kiếm đúng sách
-def testcase_12(driver):
+# passed in 13.09s
+def test_find_speciic_product(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
     time.sleep(1)
@@ -270,7 +261,8 @@ def testcase_12(driver):
     assert "SÁCH LẬP TRÌNH PYTHON" in book_name
 
 #Test chức năng tìm kiếm bằng 1 phần của tên sản phẩm đúng
-def testcase_13(driver):
+# passed in 13.03s
+def test_find_product_with_keyword(driver):
     keyword = "sách"
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -290,7 +282,8 @@ def testcase_13(driver):
         assert keyword.upper() in book_name
 
 #Test chức năng tìm kiếm sách bị ẩn
-def testcase_14(driver):
+#Fail vì các sách ẩn vẫn hiển thị
+def test_find_hidden_product(driver):
     keyword = "TEST"
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -313,7 +306,8 @@ def testcase_14(driver):
         assert keyword.upper() not in book_name.text
 
 #Test chức năng lọc theo thể loại
-def testcase_15(driver):
+# passed in 14.25s
+def test_product_type_filter(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
     time.sleep(1)

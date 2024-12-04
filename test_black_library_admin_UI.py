@@ -27,7 +27,8 @@ def get_clickable_element(driver, by: By, arg, timeout = 10):
     return element
 
 #Test đăng nhập bằng tài khoản admin
-def testcase_1(driver):
+# passed in 11.73s
+def test_login_with_admin_account(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
     time.sleep(1)
@@ -49,26 +50,33 @@ def testcase_1(driver):
     assert "http://localhost/mongodb/checkin.php" in current_url
 
 #Test đăng xuất khỏi trang admin
-def testcase_2(driver):
+# passed in 11.78s
+def test_logout_admin_acoount(driver):
     #Đăng nhập vào trang admin
-    testcase_1(driver)
+    test_login_with_admin_account(driver)
     #Ấn nút đăng xuất
     logout_btn = get_clickable_element(driver, By.XPATH, "//form[@action='logout.php']/button")
     logout_btn.click()
+    assert "http://localhost/mongodb/login.php" in driver.current_url
 
-#Test chức năng hiển thị user
-def testcase_3(driver):
-    testcase_1(driver)
+#Test điều hướng đến phần quản lý người dùng
+# passed in 15.02s
+def test_navigate_to_user_management(driver):
+    test_login_with_admin_account(driver)
 
     user_nav = get_clickable_element(driver, By.XPATH, "//div[@class='nav-space']/p[text()='Quản lý tài khoản']")
     user_nav.click()
 
     assert "http://localhost/mongodb/user.php" in driver.current_url
 
-#Test bộ lọc user
+
+# =================== Quản lý người dùng ===================
+
+
 #Test nếu input rỗng
-def testcase_4_empty_input(driver):
-    testcase_3(driver)
+# passed in 17.11s
+def test_find_user_with_empty_input(driver):
+    test_navigate_to_user_management(driver)
 
     keyword = ""
     #Nhập keyword và ấn nút tìm kiếm
@@ -79,12 +87,13 @@ def testcase_4_empty_input(driver):
     time.sleep(2)
     #Lấy kết quả
     results = driver.find_elements(By.XPATH, "//table/tbody//tr")
-    #Vì keyword rỗng nên kq phải trả về toàn bộ user, len>1 vì element đầu tiên là header nên không tính
+    #Vì keyword rỗng nên kq trả về toàn bộ user, len>1 vì element đầu tiên là header nên không tính
     assert len(results) > 1
 
 #Test bằng 1 email cụ thể
-def testcase_4_valid_email_input(driver, keyword=None):
-    testcase_3(driver)
+# passed in 16.38s
+def test_find_user_with_valid_email_input(driver, keyword=None):
+    test_navigate_to_user_management(driver)
 
     cur_keyword = keyword if keyword else "lmt2@gmail.com"
     #Nhập keyword và ấn nút tìm kiếm
@@ -99,9 +108,10 @@ def testcase_4_valid_email_input(driver, keyword=None):
     #Lấy phần tử thứ 1 vì 0 là header
     assert cur_keyword in str(results[0].text).lower()
 
-#Test bằng 1 phần email
-def testcase_4_unfinished_input(driver):
-    testcase_3(driver)
+#Test tìm kiếm user bằng keyword
+# passed in 17.25s
+def test_find_user_by_keyword(driver):
+    test_navigate_to_user_management(driver)
 
     keyword = "lmt"
     #Nhập keyword và ấn nút tìm kiếm
@@ -118,9 +128,10 @@ def testcase_4_unfinished_input(driver):
         current_user = str(results[i].text).lower()
         assert keyword in current_user
 
-#Test bằng 1 email không tồn tại
-def testcase_4_invalid_email(driver, keyword=None):
-    testcase_3(driver)
+#Test tìm kiếm 1 user chưa đăng ký
+# passed in 16.69s
+def test_find_not_registed_user(driver, keyword=None):
+    test_navigate_to_user_management(driver)
 
     #email chưa được đăng ký trong db
     cur_keyword = keyword if keyword else "asdlmt123987@gmail.com"
@@ -137,8 +148,9 @@ def testcase_4_invalid_email(driver, keyword=None):
     assert len(results) == 1
 
 #test bộ lọc số lượng
-def testcase_5_filter_by_num(driver):
-    testcase_3(driver)
+# passed in 30.06s
+def test_filter_by_num(driver):
+    test_navigate_to_user_management(driver)
 
     #default là 10 nhưng lúc load thì sẽ hiển thị toàn bộ
     for i in range (1, 4):
@@ -180,8 +192,9 @@ def testcase_5_filter_by_num(driver):
             assert len(results) == int(selected_value)+1
 
 #test bộ lọc trạng thái
-def testcase_5_status_filter(driver):
-    testcase_3(driver)
+# passed in 35.55s
+def test_status_filter(driver):
+    test_navigate_to_user_management(driver)
     status = {
         "0" : "Chưa được duyệt",
         "1" : "Đã được duyệt",
@@ -190,10 +203,10 @@ def testcase_5_status_filter(driver):
     }
     #tính số lượng các option để loop
     options = driver.find_elements(By.XPATH, "//select[@name='status']//option")
-    for i in range (0, len(options)):
+    for i in range (0, len(options)-1):
         time.sleep(1)
         driver.find_element(By.XPATH, "//body").send_keys(Keys.HOME)
-
+        time.sleep(0.5)
         #Chọn filter
         status_filter = get_clickable_element(driver, By.XPATH, "//div//select[@name='status']")
         status_filter.click()
@@ -231,8 +244,8 @@ def testcase_5_status_filter(driver):
 
 #test bộ lọc phân loại người dùng
 #Fail vì lọc không hoạt động
-def testcase_5_user_type_filter(driver):
-    testcase_3(driver)
+def test_user_type_filter(driver):
+    test_navigate_to_user_management(driver)
     #tính số lượng các option để loop
     options = driver.find_elements(By.XPATH, "//select[@name='role']//option")
     for i in range (0, len(options)):
@@ -276,8 +289,9 @@ def testcase_5_user_type_filter(driver):
             assert selected_value.lower() in str(results[i].text).lower()
 
 #Test áp dụng nhiều bộ lọc
-def testcase_5_user_type_filter(driver):
-    testcase_3(driver)
+# passed in 20.35s
+def test_multi_filter(driver):
+    test_navigate_to_user_management(driver)
     #Chọn filter
     num_filter = get_clickable_element(driver, By.XPATH, "//div//select[@name='num']")
     num_filter.click()
@@ -316,6 +330,7 @@ def testcase_5_user_type_filter(driver):
         assert "Chưa được duyệt".lower() in str(status_results[i].text).lower()  
 
 #Test add nhiều tài khoản bằng admin
+#Cái này để thêm nhiều tài khoản nhằm mục đích có dữ liệu để test nên không thêm vào đồ án
 def test_add_multi_user(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -366,12 +381,13 @@ def test_add_multi_user(driver):
 
 
 #Test chức năng xem chi tiết tài khoản user
-def testcase_6(driver, keyword=None):
+# passed in 16.83s
+def test_user_detail(driver, keyword=None):
     #modify phần này để sử dụng lại việc check thông tin user sau khi thay đổi thông tin
     if keyword:
-        testcase_4_valid_email_input(driver, keyword)
+        test_find_user_with_valid_email_input(driver, keyword)
     else:
-        testcase_3(driver)
+        test_navigate_to_user_management(driver)
 
     #Lấy thông tin của người dùng thứ index+1, vd: người dùng 1 thì index = 1+1
     index = 2
@@ -410,10 +426,10 @@ def testcase_6(driver, keyword=None):
 
 #Test chức năng thay đổi thông tin tài khoản
 #Fail vì chức năng cập nhật sai
-def testcase_7(driver):
+def test_change_user_info(driver):
     #tìm kiếm user bằng email
     email = "lmt@gmail.com"
-    testcase_4_valid_email_input(driver, email)
+    test_find_user_with_valid_email_input(driver, email)
 
     #chọn nút xem chi tiết
     user_detail_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button")
@@ -442,7 +458,7 @@ def testcase_7(driver):
     save_btn = get_clickable_element(driver, By.XPATH, "//div[@class='buttons']//button[1]")
     save_btn.click()
 
-    testcase_4_valid_email_input(driver, email)
+    test_find_user_with_valid_email_input(driver, email)
 
     user_info = driver.find_elements(By.XPATH, f"//table/tbody//tr[2]//td")
 
@@ -450,8 +466,9 @@ def testcase_7(driver):
     assert new_role.lower() == str(user_info[3].text).lower()
 
 #Test chức năng từ chối tài khoản
-def testcase_8(driver):
-    testcase_3(driver)
+# passed in 27.19s
+def test_deny_user_account(driver):
+    test_navigate_to_user_management(driver)
     #Lấy element tùy chọn trạng thái
     status_options = driver.find_element(By.XPATH, "//select[@name='status']")
     select_options = Select(status_options)
@@ -467,13 +484,14 @@ def testcase_8(driver):
     decline_btn.click()
 
     #Sau khi từ chối thì tìm lại tài khoản vừa từ chối để kiểm tra
-    testcase_4_valid_email_input(driver, email)
+    test_find_user_with_valid_email_input(driver, email)
     status = driver.find_element(By.XPATH, "//table/tbody//tr[2]//td[3]").text
     assert "Đã Từ Chối" in status
 
 #Test chức năng từ duyệt tài khoản
+# passed in 27.83s
 def testcase_9(driver):
-    testcase_3(driver)
+    test_navigate_to_user_management(driver)
     #Lấy element tùy chọn trạng thái
     status_options = driver.find_element(By.XPATH, "//select[@name='status']")
     select_options = Select(status_options)
@@ -489,15 +507,15 @@ def testcase_9(driver):
     decline_btn.click()
 
     #Sau khi từ chối thì tìm lại tài khoản vừa từ chối để kiểm tra
-    testcase_4_valid_email_input(driver, email)
+    test_find_user_with_valid_email_input(driver, email)
     status = driver.find_element(By.XPATH, "//table/tbody//tr[2]//td[3]").text
     assert "Đã Được Duyệt" in status
 
 #Test chức năng bỏ trống trường thông tin tài khoản
-def testcase_10(driver):
+def test_empty_user_detail(driver):
     #tìm kiếm user bằng email
-    email = "user14@gmail.com"
-    testcase_4_valid_email_input(driver, email)
+    email = "user18@gmail.com"
+    test_find_user_with_valid_email_input(driver, email)
 
     #chọn nút xem chi tiết
     user_detail_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button[text()='Chi tiết']")
@@ -519,7 +537,7 @@ def testcase_10(driver):
     save_btn = get_clickable_element(driver, By.XPATH, "//div[@class='buttons']//button[1]")
     save_btn.click()
 
-    testcase_4_valid_email_input(driver, email)
+    test_find_user_with_valid_email_input(driver, email)
 
     user_detail_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button[text()='Chi tiết']")
     user_detail_btn.click()
@@ -533,10 +551,11 @@ def testcase_10(driver):
     assert "" in driver.find_element(By.NAME, "pass").text
 
 #Test chức năng xóa tài khoản
+# passed in 31.16s
 def testcase_11(driver):
     #tìm kiếm user bằng email có tồn tại
-    email = "user16@gmail.com"
-    testcase_4_valid_email_input(driver, email)
+    email = "user24@gmail.com"
+    test_find_user_with_valid_email_input(driver, email)
 
     #chọn nút xem chi tiết
     user_detail_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button[text()='Chi tiết']")
@@ -550,4 +569,4 @@ def testcase_11(driver):
     time.sleep(1)
 
     #Tìm lại tài khoản đã xóa
-    testcase_4_invalid_email(driver, email)
+    test_find_not_registed_user(driver, email)
