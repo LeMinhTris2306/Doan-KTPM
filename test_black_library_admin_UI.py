@@ -490,7 +490,7 @@ def test_deny_user_account(driver):
 
 #Test chức năng từ duyệt tài khoản
 # passed in 27.83s
-def testcase_9(driver):
+def test_accept_new_registration(driver):
     test_navigate_to_user_management(driver)
     #Lấy element tùy chọn trạng thái
     status_options = driver.find_element(By.XPATH, "//select[@name='status']")
@@ -512,9 +512,10 @@ def testcase_9(driver):
     assert "Đã Được Duyệt" in status
 
 #Test chức năng bỏ trống trường thông tin tài khoản
+#Fail vì có thể để trống mật khẩu
 def test_empty_user_detail(driver):
     #tìm kiếm user bằng email
-    email = "user18@gmail.com"
+    email = "user21@gmail.com"
     test_find_user_with_valid_email_input(driver, email)
 
     #chọn nút xem chi tiết
@@ -537,22 +538,12 @@ def test_empty_user_detail(driver):
     save_btn = get_clickable_element(driver, By.XPATH, "//div[@class='buttons']//button[1]")
     save_btn.click()
 
-    test_find_user_with_valid_email_input(driver, email)
-
-    user_detail_btn = get_clickable_element(driver, By.XPATH, "//table/tbody//tr[2]//td[6]//form//button[text()='Chi tiết']")
-    user_detail_btn.click()
-    driver.find_element(By.XPATH, "//body").send_keys(Keys.END)
-    time.sleep(1)
-
-    assert "" in driver.find_element(By.NAME, "ten").text
-    assert "" in driver.find_element(By.NAME, "cccd").text
-    assert "" in driver.find_element(By.NAME, "number").text
-    assert "" in driver.find_element(By.NAME, "address").text
-    assert "" in driver.find_element(By.NAME, "pass").text
+    message = driver.find_element(By.XPATH, "/html/body/div[2]").text
+    assert "Không được để trống mật khẩu!" in message
 
 #Test chức năng xóa tài khoản
 # passed in 31.16s
-def testcase_11(driver):
+def test_delete_user_account(driver):
     #tìm kiếm user bằng email có tồn tại
     email = "user24@gmail.com"
     test_find_user_with_valid_email_input(driver, email)

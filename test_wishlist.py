@@ -28,7 +28,7 @@ def get_clickable_element(driver, by: By, arg, timeout = 10):
 
 
 #Test đăng nhập thành công
-def test_login(driver):
+def test_valid_login(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
     time.sleep(1)
@@ -50,8 +50,9 @@ def test_login(driver):
     assert "http://localhost/mongodb/index.php" in current_url
 
 #Test thêm vào wishlist
+# passed in 19.36s
 def test_add_to_wishlist(driver):
-    test_login(driver)
+    test_valid_login(driver)
 
     #Bấm nút page down để kéo xuống
     driver.find_element(By.XPATH, "//body").send_keys(Keys.PAGE_DOWN)
@@ -76,9 +77,11 @@ def test_add_to_wishlist(driver):
     time.sleep(1)
     assert str(book_name).lower() in book_names
 
+#Test thêm nhiều sách vào wishlist
+# passed in 21.33s
 def test_add_multi_pd_to_wishlist(driver, no_products = 2):
     count = 0
-    test_login(driver)
+    test_valid_login(driver)
     added_book_names = []
     index = randint(1, 5)
     while count < no_products:
@@ -114,6 +117,7 @@ def test_add_multi_pd_to_wishlist(driver, no_products = 2):
     assert False not in result
 
 #test Xem chi tiết sách trong wishlist
+# passed in 17.50s
 def test_book_detail_in_wishlist(driver, add_new=True):
     if add_new:
         test_add_to_wishlist(driver)
@@ -126,8 +130,8 @@ def test_book_detail_in_wishlist(driver, add_new=True):
 
     assert str(book_name).lower() in str(book_name_detail).lower()
 
-
 #Test Thêm 1 sách đã có trong wishlist
+# passed in 19.54s
 def test_add_existing_book_in_wishlist(driver):
     test_book_detail_in_wishlist(driver)
 
@@ -137,7 +141,9 @@ def test_add_existing_book_in_wishlist(driver):
 
     message = driver.find_element(By.XPATH, "/html/body/div[2]/h1[2]/a[3]/p").text
     assert "Bạn đã chọn sách này rồi" in message
+
 #Test xóa 1 sản phẩm khỏi wishlist
+# passed in 19.12s
 def test_delete_from_wishlist(driver):
     #Thêm 1 sản phẩm vào wishlist trong trường hợp wishlist trống
     test_add_to_wishlist(driver)
@@ -157,7 +163,8 @@ def test_delete_from_wishlist(driver):
     time.sleep(1)
     assert str(book_name).lower() not in book_names
 
-#test xóa tất cả sản phẩm trong wishlist
+#test xóa tất cả sản phẩm trong wishlist sau khi thêm sản phẩm
+# passed in 22.51s
 def test_delete_all(driver):
     test_add_multi_pd_to_wishlist(driver)
 
@@ -171,6 +178,7 @@ def test_delete_all(driver):
     assert len(a) == 1
 
 #Test thêm vào cart từ wishlist
+# passed in 18.68s
 def test_add_to_cart_form_wishlist(driver):
     test_add_to_wishlist(driver)
 
