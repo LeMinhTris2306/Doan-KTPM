@@ -51,6 +51,7 @@ def test_valid_login(driver):
 
 #Test thêm vào wishlist
 # passed in 19.36s
+#TC_WL_01
 def test_add_to_wishlist(driver):
     test_valid_login(driver)
 
@@ -79,6 +80,7 @@ def test_add_to_wishlist(driver):
 
 #Test thêm nhiều sách vào wishlist
 # passed in 21.33s
+#TC_WL_02
 def test_add_multi_pd_to_wishlist(driver, no_products = 2):
     count = 0
     test_valid_login(driver)
@@ -118,6 +120,7 @@ def test_add_multi_pd_to_wishlist(driver, no_products = 2):
 
 #test Xem chi tiết sách trong wishlist
 # passed in 17.50s
+#TC_WL_03
 def test_book_detail_in_wishlist(driver, add_new=True):
     if add_new:
         test_add_to_wishlist(driver)
@@ -132,6 +135,7 @@ def test_book_detail_in_wishlist(driver, add_new=True):
 
 #Test Thêm 1 sách đã có trong wishlist
 # passed in 19.54s
+#TC_WL_04
 def test_add_existing_book_in_wishlist(driver):
     test_book_detail_in_wishlist(driver)
 
@@ -144,6 +148,7 @@ def test_add_existing_book_in_wishlist(driver):
 
 #Test xóa 1 sản phẩm khỏi wishlist
 # passed in 19.12s
+#TC_WL_05
 def test_delete_from_wishlist(driver):
     #Thêm 1 sản phẩm vào wishlist trong trường hợp wishlist trống
     test_add_to_wishlist(driver)
@@ -165,6 +170,7 @@ def test_delete_from_wishlist(driver):
 
 #test xóa tất cả sản phẩm trong wishlist sau khi thêm sản phẩm
 # passed in 22.51s
+#TC_WL_06
 def test_delete_all(driver):
     test_add_multi_pd_to_wishlist(driver)
 
@@ -179,6 +185,7 @@ def test_delete_all(driver):
 
 #Test thêm vào cart từ wishlist
 # passed in 18.68s
+#TC_WL_07
 def test_add_to_cart_form_wishlist(driver):
     test_add_to_wishlist(driver)
 

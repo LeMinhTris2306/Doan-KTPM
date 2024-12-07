@@ -28,6 +28,7 @@ def get_clickable_element(driver, by: By, arg, timeout = 10):
 
 #Test đăng nhập bằng tài khoản admin
 # passed in 11.73s
+#TC_UM_01
 def test_login_with_admin_account(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -61,6 +62,7 @@ def test_logout_admin_acoount(driver):
 
 #Test điều hướng đến phần quản lý người dùng
 # passed in 15.02s
+#TC_UM_02
 def test_navigate_to_user_management(driver):
     test_login_with_admin_account(driver)
 
@@ -75,6 +77,7 @@ def test_navigate_to_user_management(driver):
 
 #Test nếu input rỗng
 # passed in 17.11s
+#TC_UM_03
 def test_find_user_with_empty_input(driver):
     test_navigate_to_user_management(driver)
 
@@ -92,6 +95,7 @@ def test_find_user_with_empty_input(driver):
 
 #Test bằng 1 email cụ thể
 # passed in 16.38s
+#TC_UM_04
 def test_find_user_with_valid_email_input(driver, keyword=None):
     test_navigate_to_user_management(driver)
 
@@ -110,6 +114,7 @@ def test_find_user_with_valid_email_input(driver, keyword=None):
 
 #Test tìm kiếm user bằng keyword
 # passed in 17.25s
+#TC_UM_05
 def test_find_user_by_keyword(driver):
     test_navigate_to_user_management(driver)
 
@@ -130,6 +135,7 @@ def test_find_user_by_keyword(driver):
 
 #Test tìm kiếm 1 user chưa đăng ký
 # passed in 16.69s
+#TC_UM_06
 def test_find_not_registed_user(driver, keyword=None):
     test_navigate_to_user_management(driver)
 
@@ -149,6 +155,7 @@ def test_find_not_registed_user(driver, keyword=None):
 
 #test bộ lọc số lượng
 # passed in 30.06s
+#TC_UM_07
 def test_filter_by_num(driver):
     test_navigate_to_user_management(driver)
 
@@ -193,6 +200,7 @@ def test_filter_by_num(driver):
 
 #test bộ lọc trạng thái
 # passed in 35.55s
+#TC_UM_08
 def test_status_filter(driver):
     test_navigate_to_user_management(driver)
     status = {
@@ -244,6 +252,7 @@ def test_status_filter(driver):
 
 #test bộ lọc phân loại người dùng
 #Fail vì lọc không hoạt động
+#TC_UM_09
 def test_user_type_filter(driver):
     test_navigate_to_user_management(driver)
     #tính số lượng các option để loop
@@ -290,6 +299,7 @@ def test_user_type_filter(driver):
 
 #Test áp dụng nhiều bộ lọc
 # passed in 20.35s
+#TC_UM_10
 def test_multi_filter(driver):
     test_navigate_to_user_management(driver)
     #Chọn filter
@@ -331,6 +341,8 @@ def test_multi_filter(driver):
 
 #Test add nhiều tài khoản bằng admin
 #Cái này để thêm nhiều tài khoản nhằm mục đích có dữ liệu để test nên không thêm vào đồ án
+# passed in 21.72s khi tạo 1 tài khoản
+#TC_UM_11
 def test_add_multi_user(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -344,7 +356,7 @@ def test_add_multi_user(driver):
     time.sleep(1)
     #Điền thông tin và đăng nhập
 
-    for i in range(0, 30):
+    for i in range(0, 1):
         #Đăng nhập admin
         driver.find_element(By.NAME, "email").send_keys("admin")
         driver.find_element(By.NAME, "password").send_keys("123")
@@ -361,9 +373,9 @@ def test_add_multi_user(driver):
         #Điền thông tin
         random_sdt = randint(111111, 999999)
         random_cccd = randint(100000, 999999)
-        driver.find_element(By.NAME, "email").send_keys(f"user{i}@gmail.com")
+        driver.find_element(By.NAME, "email").send_keys(f"nguoidung{i}@gmail.com")
         driver.find_element(By.NAME, "password").send_keys("lmt123")
-        driver.find_element(By.NAME, "name").send_keys(f"User {i}")
+        driver.find_element(By.NAME, "name").send_keys(f"nguoidung {i}")
         driver.find_element(By.NAME, "number").send_keys(f"0{random_sdt+i}")
         driver.find_element(By.NAME, "cccd").send_keys(f"083{random_cccd+i}")
         driver.find_element(By.NAME, "address").send_keys("lVieejt Nam")
@@ -382,6 +394,7 @@ def test_add_multi_user(driver):
 
 #Test chức năng xem chi tiết tài khoản user
 # passed in 16.83s
+#TC_UM_12
 def test_user_detail(driver, keyword=None):
     #modify phần này để sử dụng lại việc check thông tin user sau khi thay đổi thông tin
     if keyword:
@@ -426,6 +439,7 @@ def test_user_detail(driver, keyword=None):
 
 #Test chức năng thay đổi thông tin tài khoản
 #Fail vì chức năng cập nhật sai
+#TC_UM_13
 def test_change_user_info(driver):
     #tìm kiếm user bằng email
     email = "lmt@gmail.com"
@@ -467,6 +481,7 @@ def test_change_user_info(driver):
 
 #Test chức năng từ chối tài khoản
 # passed in 27.19s
+#TC_UM_14
 def test_deny_user_account(driver):
     test_navigate_to_user_management(driver)
     #Lấy element tùy chọn trạng thái
@@ -490,6 +505,7 @@ def test_deny_user_account(driver):
 
 #Test chức năng từ duyệt tài khoản
 # passed in 27.83s
+#TC_UM_15
 def test_accept_new_registration(driver):
     test_navigate_to_user_management(driver)
     #Lấy element tùy chọn trạng thái
@@ -513,6 +529,7 @@ def test_accept_new_registration(driver):
 
 #Test chức năng bỏ trống trường thông tin tài khoản
 #Fail vì có thể để trống mật khẩu
+#TC_UM_16
 def test_empty_user_detail(driver):
     #tìm kiếm user bằng email
     email = "user21@gmail.com"
@@ -543,6 +560,7 @@ def test_empty_user_detail(driver):
 
 #Test chức năng xóa tài khoản
 # passed in 31.16s
+#TC_UM_17
 def test_delete_user_account(driver):
     #tìm kiếm user bằng email có tồn tại
     email = "user24@gmail.com"

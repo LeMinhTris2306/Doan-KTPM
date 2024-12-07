@@ -29,6 +29,7 @@ def get_clickable_element(driver, by: By, arg, timeout = 10):
 
 #Test đăng nhập thành công
 #passed in 11.79s
+#TC_DN_01
 def test_valid_login(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -52,6 +53,7 @@ def test_valid_login(driver):
 
 # Test đăng nhập sai mật khẩu
 #passed in 10.66s
+#TC_DN_02
 def test_login_with_wrong_password(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -75,6 +77,7 @@ def test_login_with_wrong_password(driver):
 
 # Test đăng nhập khi để trống thông tin
 # passed in 10.58s
+#TC_DN_03
 def test_login_with_blank_fields(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -99,6 +102,7 @@ def test_login_with_blank_fields(driver):
 
 # Test đăng nhập khi để trống mật khẩu
 # passed in 10.62s
+#TC_DN_04
 def test_login_with_blank_password_field(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -122,6 +126,7 @@ def test_login_with_blank_password_field(driver):
 
 # Test đăng nhập khi điền email không đúng
 # passed in 10.63s
+#TC_DN_05
 def test_login_with_wrong_email(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -145,6 +150,7 @@ def test_login_with_wrong_email(driver):
 
 #Test đăng nhập bằng tài khoản đã bị khóa
 #Test fail vì vẫn đăng nhập được
+#TC_DN_06
 def test_login_with_banned_account(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -168,6 +174,7 @@ def test_login_with_banned_account(driver):
 
 # Test nosql injection
 # passed in 10.74s
+#TC_DN_07
 def test_nosql_injection(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -191,6 +198,7 @@ def test_nosql_injection(driver):
 
 #Test chức năng đăng xuất
 # passed in 13.74s
+#TC_DN_08
 def test_logout(driver):
     #Thực hiện đăng nhập thành công
     test_valid_login(driver)
@@ -211,7 +219,8 @@ def test_logout(driver):
 
 #Test chức năng tìm kiếm khi để trống
 # passed in 10.01s
-def test_find_product_with_blank_field(driver):
+#TC_TK_01
+def test_find_product_with_blank_keyword(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
     time.sleep(1)
@@ -227,6 +236,7 @@ def test_find_product_with_blank_field(driver):
 
 #Test chức năng tìm kiếm sản phẩm không tồn tại
 # passed in 11.16s
+#TC_TK_02
 def test_find_product_that_not_exist(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -244,6 +254,7 @@ def test_find_product_that_not_exist(driver):
 
 #Test chức năng tìm kiếm đúng sách
 # passed in 13.09s
+#TC_TK_03
 def test_find_speciic_product(driver):
         #Kết nối đến web
     driver.get("http://localhost/mongodb/")
@@ -262,6 +273,7 @@ def test_find_speciic_product(driver):
 
 #Test chức năng tìm kiếm bằng 1 phần của tên sản phẩm đúng
 # passed in 13.03s
+#TC_TK_04
 def test_find_product_with_keyword(driver):
     keyword = "sách"
     #Kết nối đến web
@@ -283,6 +295,7 @@ def test_find_product_with_keyword(driver):
 
 #Test chức năng tìm kiếm sách bị ẩn
 #Fail vì các sách ẩn vẫn hiển thị
+#TC_TK_05
 def test_find_hidden_product(driver):
     keyword = "TEST"
     #Kết nối đến web
@@ -307,6 +320,7 @@ def test_find_hidden_product(driver):
 
 #Test chức năng lọc theo thể loại
 # passed in 14.25s
+#TC_TK_06
 def test_product_type_filter(driver):
     #Kết nối đến web
     driver.get("http://localhost/mongodb/")
